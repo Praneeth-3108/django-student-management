@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f6f9; }
+        .container { max-width: 800px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h2 { margin: 0; color: #333; }
+        .btn-admin { background-color: #28a745; color: white; padding: 8px 14px; text-decoration: none; border-radius: 4px; font-size: 14px; }
+        .form-row { display: flex; gap: 8px; margin-bottom: 15px; background: #eef2f7; padding: 12px; border-radius: 6px; }
+        .form-row input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1; }
+        .form-row button { padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .search-box { margin-bottom: 15px; display: flex; gap: 8px; }
+        .search-box input { padding: 8px; width: 260px; border: 1px solid #ccc; border-radius: 4px; }
+        .search-box button { padding: 8px 14px; background-color: #343a40; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .search-box a { padding: 8px 12px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .btn-delete { background-color: #dc3545; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Student List (Total: {{ students|length }})</h2>
+            <a href="/admin/" class="btn-admin">Admin Panel</a>
+        </div>
+
+        <!-- Add Student Form -->
+        <form method="POST" class="form-row">
+            {% csrf_token %}
+            <input type="text" name="roll_no" placeholder="Roll No (e.g. 21CSE05)" required>
+            <input type="text" name="name" placeholder="Student Name" required>
+            <input type="text" name="branch" placeholder="Branch (e.g. CSE)" required>
+            <button type="submit">+ Add Student</button>
+        </form>
+
+        <!-- Search Form -->
+        <form method="GET" class="search-box">
+            <input type="text" name="q" placeholder="Search name, roll no, or branch..." value="{{ query }}">
+            <button type="submit">Search</button>
+            {% if query %}
+                <a href="/">Reset</a>
+            {% endif %}
+        </form>
+
+        <!-- Student Table -->
+        <table>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Branch</th>
+                <th>Action</th>
+            </tr>
+            {% for s in students %}
+            <tr>
+                <td>{{ s.roll_no }}</td>
+                <td>{{ s.name }}</td>
+                <td>{{ s.branch }}</td>
+                <td>
+                    <a href="{% url 'delete_student' s.id %}" class="btn-delete" onclick="return confirm('Delete {{ s.name }}?');">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No matching students found.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
